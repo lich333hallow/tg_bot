@@ -5,31 +5,30 @@ from email import encoders
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from telebot.types import Message, PhotoSize, Document
-from typing import Union
+from telebot.types import Message, PhotoSize, Document, Video
 from telebot import TeleBot
 
 bot = TeleBot(settings["TOKEN"])
 
 
-def coding_and_attach(type: str, obj: Union[PhotoSize, Document], mime: str = None) -> MIMEApplication:
-    if type == "photo":
+def coding_and_attach(types: str, obj: PhotoSize | Document | Video) -> MIMEApplication:
+    if types == "photo":
         file_info = bot.get_file(obj[len(obj) - 1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
         part = MIMEApplication(
             downloaded_file,
             file_info.file_path[-3:],
-            Name=file_info.file_path[len("photos/"):]
+            Name=f"{file_info.file_unique_id}.{file_info.file_path[-3:]}"
         )
         encoders.encode_base64(part)
         return part
-    elif type == "document":
+    else:
         file_info = bot.get_file(obj.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
         part = MIMEApplication(
             downloaded_file,
             obj.mime_type,
-            Name=obj.file_name
+            Name=f"{file_info.file_unique_id}.{file_info.file_path[-3:]}"
         )
         encoders.encode_base64(part)
         return part
@@ -71,19 +70,23 @@ class MailSender:
 
 
 class SendEmailToFor:
-    def __init__(self, photos: list, documents: list, adds: str, receiver: str) -> None:
+    def __init__(self, photos: list, documents: list, videos: list,
+                 adds: str, receiver: str) -> None:
         self.photos = photos
         self.documents = documents
         self.adds = adds
         self.receiver = receiver
         self.msg = MIMEMultipart()
+        self.videos = videos
 
     def fors(self, mess: Message, forwarded: bool) -> None:
-        if self.photos or self.documents:
+        if self.photos or self.documents or self.videos:
             for ph in self.photos:
-                self.msg.attach(coding_and_attach(type="photo", obj=ph))
+                self.msg.attach(coding_and_attach(types="photo", obj=ph))
             for doc in self.documents:
-                self.msg.attach(coding_and_attach(type="document", obj=doc))
+                self.msg.attach(coding_and_attach(types="document", obj=doc))
+            for video in self.videos:
+                self.msg.attach(coding_and_attach(types="video", obj=video))
             text = check(forwarded=forwarded, adds=self.adds, mess=mess)
             self.msg.attach(text)
         else:
