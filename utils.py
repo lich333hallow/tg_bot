@@ -10,12 +10,20 @@ utils = {
 }
 
 
-def save():
+def save() -> None:
+    """
+    Сохранение данные пользователя
+    :return None:
+    """
     albums = pandas.DataFrame(utils["receiver"], index=[0])
     albums.to_csv("receivers_info.csv", index=False)
 
 
-def load():
+def load() -> None:
+    """
+    Загрузка данных пользователя
+    :return None:
+    """
     new_dict = {}
     df = pandas.read_csv("receivers_info.csv")
     for i in df:
