@@ -12,7 +12,7 @@ utils = {
 
 def save() -> None:
     """
-    Сохранение данные пользователя
+    Сохранение данных пользователя
     :return None:
     """
     albums = pandas.DataFrame(utils["receiver"], index=[0])

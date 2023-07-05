@@ -4,6 +4,8 @@ import telebot
 
 from mailing import SendEmailToFor, bot
 from utils import utils, save, load
+from delete import delete_folders
+from threading import Thread
 
 
 def photos(mess: telebot.types.Message) -> None:
@@ -34,7 +36,6 @@ def check(mess: telebot.types.Message):
 
 
 load()
-
 
 @bot.message_handler(commands=["start"])
 def start(mess: telebot.types.Message):
@@ -69,8 +70,6 @@ def sending(mess: telebot.types.Message):
         sleep(1)
     elif mess.chat.type == "private":
         bot.send_message(mess.chat.id, "Введите команду /start для настройки бота! ")
-
-
 def das(mess: telebot.types.Message):
     print("work start")
     sleep(10)
@@ -78,7 +77,10 @@ def das(mess: telebot.types.Message):
                    adds=utils["add"], receiver=utils["receiver"][mess.chat.id]).parse(mess=mess)
     utils["db"], utils["add"], utils["document"], utils["photo"] = False, "", [], []
     print("work end")
-    bot.send_message(mess.chat.id, "Сообщение отправлено")
+    bot.send_message(mess.chat.id, "Сообщение отправлено, но будет удалено")
+    pr = Thread(target=delete_folders())
+    pr.start()
+
 
 
 print("Bot is ready!")

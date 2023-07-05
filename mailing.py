@@ -59,7 +59,7 @@ def writing_file(filename: str, data: bytes) -> None:
     file.close()
 
 
-def coding_and_attach(types: str, obj: PhotoSize | Document | Video) -> bool:
+def coding_and_attach(types: str, obj: PhotoSize | Document | Video) -> str:
     """
     Отправка файлов на Яндекс.Диск
     :param types: тип файла
@@ -74,7 +74,6 @@ def coding_and_attach(types: str, obj: PhotoSize | Document | Video) -> bool:
         writing_file(filename, downloaded_file)
         upload_file(savefile=f"disk:/files/Фото/{filename}", loadfile=filename, replace=True)
         url = publish(path=f"disk:/files/Фото/{filename}")
-        print(url)
         remove(f"{file_info.file_unique_id}.{file_info.file_path[-3:]}")
     else:
         file_info = bot.get_file(obj.file_id)
@@ -84,11 +83,9 @@ def coding_and_attach(types: str, obj: PhotoSize | Document | Video) -> bool:
         if types == "document":
             upload_file(savefile=f"disk:/files/Документы/{filename}", loadfile=filename, replace=True)
             url = publish(path=f"disk:/files/Документы/{filename}")
-            print(url)
         elif types == "video":
             upload_file(savefile=f"disk:/files/Видео/{filename}", loadfile=filename, replace=True)
             url = publish(path=f"disk:/files/Видео/{filename}")
-            print(url)
         remove(f"{file_info.file_unique_id}.{file_info.file_path[-3:]}")
     return url
 
