@@ -20,11 +20,11 @@ headers = {
 
 def upload_file(loadfile: str, savefile: str, replace=False) -> None:
     """
-        Загрузка файла.
-        :param savefile: Путь к файлу на Диске
-        :param loadfile: Путь к загружаемому файлу
-        :param replace: true or false Замена файла на Диске
-        :return None:
+    Загрузка файла.
+    :param savefile: Путь к файлу на Диске
+    :param loadfile: Путь к загружаемому файлу
+    :param replace: true or false Замена файла на Диске
+    :return None:
     """
     res = requests.get(f'{URL}/upload?path={savefile}&overwrite={replace}', headers=headers).json()
     with open(loadfile, 'rb') as f:
