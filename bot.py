@@ -1,10 +1,8 @@
 from time import sleep
-
 import telebot
-
 from mailing import SendEmailToFor, bot
 from utils import utils, save, load
-from delete import delete_folders
+from delete import delete_files
 from threading import Thread
 
 
@@ -35,8 +33,6 @@ def check(mess: telebot.types.Message):
         videos(mess)
 
 
-load()
-
 @bot.message_handler(commands=["start"])
 def start(mess: telebot.types.Message):
     if mess.chat.id not in utils["receiver"].keys() and mess.chat.type == "private":
@@ -62,25 +58,26 @@ def sending(mess: telebot.types.Message):
             utils["add"] += f"{mess.text if mess.text is not None else utils['mel']}" + \
                             "\n" if mess.text is not None else utils['mel']
             check(mess=mess)
-            das(mess=mess)
+            work(mess=mess)
         else:
             check(mess=mess)
             utils["add"] += f"{mess.text if mess.text is not None else utils['mel']}" + \
                             "\n" if mess.text is not None else utils['mel']
         sleep(1)
     elif mess.chat.type == "private":
-        bot.send_message(mess.chat.id, "Введите команду /start для настройки бота! ")
-def das(mess: telebot.types.Message):
+        bot.send_message(mess.chat.id, "Введите команду /start для настройки бота!")
+
+
+def work(mess: telebot.types.Message):
     print("work start")
     sleep(10)
     SendEmailToFor(photos=utils["photo"], documents=utils["document"], videos=utils["videos"],
                    adds=utils["add"], receiver=utils["receiver"][mess.chat.id]).parse(mess=mess)
     utils["db"], utils["add"], utils["document"], utils["photo"] = False, "", [], []
     print("work end")
-    bot.send_message(mess.chat.id, "Сообщение отправлено, но будет удалено")
-    pr = Thread(target=delete_folders())
+    bot.send_message(mess.chat.id, "Сообщение отправлено (файлы будут удалены через 7 дней)")
+    pr = Thread(target=delete_files())
     pr.start()
-
 
 
 print("Bot is ready!")

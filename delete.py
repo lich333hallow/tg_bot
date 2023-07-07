@@ -9,14 +9,12 @@ headers = {
 }
 
 
-def delete_folders() -> None:
+def delete_files() -> None:
     """
-    Удаляет папки на Яндекс.Диске
+    Удаляет файлы на Яндекс.Диске
     :return None:
     """
-    folders = ["Фото", "Видео", "Документы"]
-    minutes = 0
-    days = 7
+    folders, minutes, days = ["Фото", "Видео", "Документы"], 0, 7
 
     while True:
         if days == 0 and minutes == 0:
@@ -33,11 +31,10 @@ def delete_folders() -> None:
                             f"{disk['RESOURCES']}/unpublish?path={file['path']}",
                             headers=headers
                         )
-                        res = requests.delete(
+                        requests.delete(
                             f"{disk['RESOURCES']}?path={file['path']}&permanently=true",
                             headers=headers
                         )
-                        print(res.json())
                         print("Удалено")
         else:
             time.sleep(60)
